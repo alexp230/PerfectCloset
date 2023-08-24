@@ -140,7 +140,7 @@ def getColor(picture: Image, length: int, width: int):
     # returns the average amount of red, green, and blue in the entire picture, getting us the color of the image
     return ( (Red//denominator), (Green//denominator), (Blue//denominator) )
 
-def Match_Pants(file_path: str, color_of_pants: str):
+def get_Color_of_Pants(file_path: str, color_of_pants: str):
     """
     FILE_PATH: the file path to the selected pair of pants or shirt
     COLOR_OF_PANTS: the color of pants the user selected
@@ -162,12 +162,8 @@ def Match_Pants(file_path: str, color_of_pants: str):
     
     print(RGB_value) 
 
+    return(RGB_value)
 
-    print(find_Color_Precise(RGB_value))
-    # This value determines the shirts to load in the next method
-    #List_Matches(color_of_pants)
-
-    return
 
 def find_Color_Precise(RGB_value: tuple):
     """
@@ -246,8 +242,8 @@ def find_Color_Precise(RGB_value: tuple):
     # Goes through each color in the dictionary and find the potential values for each color
     for color in color_range.keys():
 
-        # if (out_of_Range(color)):
-        #     continue
+        if (out_of_Range(color)):
+            continue
 
         rank = [color,0,0,0,0]
 
@@ -302,12 +298,18 @@ def main():
             color_of_pants = color_options.get(a, "Invalid")
 
         # Builds file path to get the picture for the desired pair of pants
-        file_root = "/Users/aprui/Side_Projects/Perfect_Closet/Pants/"
+        file_root = "/Users/aprui/Side_Projects/PerfectCloset/Pants/"
         file_end = ".png"
 
         file_name = file_root + color_of_pants + file_end
 
-        Match_Pants(file_name, color_of_pants)
+        # Gets the RGB_value/Color of selected pair of pants
+        RGB_value = get_Color_of_Pants(file_name, color_of_pants)
+
+        print(find_Color_Precise(RGB_value))
+        # This value determines the shirts to load in the next method
+        #List_Matches(color_of_pants)
+
 
     
 
