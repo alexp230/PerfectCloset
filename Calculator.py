@@ -1,7 +1,9 @@
 import turtle
 from PIL import Image
 import matplotlib.pyplot as plt
+
 import time
+from colorama import Fore, Back, Style
 
 
 
@@ -27,6 +29,26 @@ color_range_top = {
     # "Black": (0,30, 0,30, 0,30),
     # "White": (230,255, 230,255, 230,255)
 }
+
+ColorWheel = {
+    "Red": (51,255, 0,204, 0,204),
+    "Red-Orange": (51,255, 25,204, 0,204),
+    "Orange": (51,255, 25,229, 0,204),
+    "Yellow-Orange": (51,255, 51,229, 0,204),
+    "Yellow": (51,255, 51,255, 0,204),
+    "Yellow-Green": (51,204, 51,255, 0,204),
+    "Green": (0,204, 51,255, 0,204),
+    "Blue-Green": (0,204, 51,204, 51,204),
+    "Blue": (0,204, 0,204, 51,255),
+    "Blue-Purple": (25,204, 0,204, 51,255),
+    "Purple": (25,229, 0,204, 51,255),
+    "Red-Purple": (51,229, 0,204, 0,204),
+}
+
+# Match:
+# 1. Odds of wearing pants (color)
+# 2. Odds of wearing shirt (color)
+# 3. Color combo taken
 
 
 
@@ -140,7 +162,7 @@ def getColor(picture: Image, length: int, width: int):
     # returns the average amount of red, green, and blue in the entire picture, getting us the color of the image
     return ( (Red//denominator), (Green//denominator), (Blue//denominator) )
 
-def get_Color_of_Pants(file_path: str, color_of_pants: str):
+def get_RGBvalue(file_path: str, color_of_pants: str):
     """
     FILE_PATH: the file path to the selected pair of pants or shirt
     COLOR_OF_PANTS: the color of pants the user selected
@@ -149,6 +171,8 @@ def get_Color_of_Pants(file_path: str, color_of_pants: str):
         "Beige": ("Aqua", "Blue", "Cyan", "Green", "Light_Blue", "Lime_Green", "Magenta", "Orange", "Pink", "Purple", "Red", "Yellow"),
         "Dark_Blue": ("Green", "Light_Blue", "Lime_Green", "Yellow", "Orange"),
     }
+
+    file_path = "/Users/aprui/Side_Projects/PerfectCloset/Test_Images/Orange.png"
 
     image = Image.open(file_path, "r") # Can be many different formats. Opens image
 
@@ -165,7 +189,7 @@ def get_Color_of_Pants(file_path: str, color_of_pants: str):
     return(RGB_value)
 
 
-def find_Color_Precise(RGB_value: tuple):
+def RGB_to_Color(RGB_value: tuple):
     """
     RGB_VALUE: a tuple of the RGB values
 
@@ -225,6 +249,21 @@ def find_Color_Precise(RGB_value: tuple):
     "White": (230,255, 230,255, 230,255)
 }
     
+    color_range = {
+    "Red": (51,255, 0,204, 0,204),
+    "Red-Orange": (51,255, 25,128, 0,204),
+    "Orange": (51,255, 25,229, 0,204),
+    "Yellow-Orange": (51,255, 25,255, 0,204),
+    "Yellow": (51,255, 51,255, 0,204),
+    "Yellow-Green": (51,204, 51,255, 0,204),
+    "Green": (0,204, 51,255, 0,204),
+    "Blue-Green": (0,204, 51,204, 51,204),
+    "Blue": (0,204, 0,204, 51,255),
+    "Blue-Purple": (25,204, 0,204, 51,255),
+    "Purple": (25,229, 0,204, 51,255),
+    "Red-Purple": (51,229, 0,204, 0,204),
+}
+    
     # Seperates the RGB values into own variable
     r, g, b = (RGB_value)
     
@@ -237,15 +276,18 @@ def find_Color_Precise(RGB_value: tuple):
     min_blue = 4
     max_blue = 5
 
-    combos = []
+    True_combos = []
+    
 
     # Goes through each color in the dictionary and find the potential values for each color
     for color in color_range.keys():
 
-        if (out_of_Range(color)):
-            continue
+        x = False
 
-        rank = [color,0,0,0,0]
+        if (out_of_Range(color)):
+            x = True
+
+        rank = [color,0,0,0,0,0]
 
         rank[1] = percentage_difference(r,min_red, max_red, color)
         rank[2] = percentage_difference(g,min_green, max_green, color)
@@ -253,13 +295,22 @@ def find_Color_Precise(RGB_value: tuple):
         
         rank[4] = round(((rank[1] + rank[2] + rank[3]) / 3), 2)
 
-        combos.append(rank)
+        rank[5] = x
+
+        True_combos.append(rank)
 
 
+    combos = []
+    for i in True_combos:
+        if (i[5] == False):
+            print("In Range", end=" ")
+            print(i)
+            combos.append(i)
+        else:
+            print("Out of Range", end=" ")
+            print(i)
 
-    for i in combos:
-        print(i)
-
+            
 
     # Returns the color of the shirt/pants
     if (len(combos) == 1):
@@ -271,7 +322,7 @@ def find_Color_Precise(RGB_value: tuple):
 
 
 
-def main():
+def main(file_root: str, file_end: str):
 
     #createSquare(100, (0,0,204), -350, 200, 4)
 
@@ -298,15 +349,12 @@ def main():
             color_of_pants = color_options.get(a, "Invalid")
 
         # Builds file path to get the picture for the desired pair of pants
-        file_root = "/Users/aprui/Side_Projects/PerfectCloset/Pants/"
-        file_end = ".png"
-
         file_name = file_root + color_of_pants + file_end
 
         # Gets the RGB_value/Color of selected pair of pants
-        RGB_value = get_Color_of_Pants(file_name, color_of_pants)
+        RGB_value = get_RGBvalue(file_name, color_of_pants)
 
-        print(find_Color_Precise(RGB_value))
+        print(RGB_to_Color(RGB_value))
         # This value determines the shirts to load in the next method
         #List_Matches(color_of_pants)
 
@@ -349,4 +397,13 @@ June 21, 2023: added color-code to identfy the range of RGB values to multiple d
                 Found a way to find the color of something given the rgb value (CAP)
 June 26, 2023: truly found a way to calculate the color or something based off of RGB value
 """
-main()  
+
+file_root = "/Users/aprui/Side_Projects/PerfectCloset/Pants/"
+# file_root = "/Users/aprui/Side_Projects/PerfectCloset/Test_Images/"
+file_end = ".png" 
+
+main(file_root, file_end)  
+
+Odds_wearing_pants = .50
+Odds_wearing_shirt = .50
+Taken_Combo = False
