@@ -169,9 +169,9 @@ def getRGB(picture: Image, length: int, width: int):
         for x in range(length):
             for y in range(width):
                 r, g, b = picture[x,y]
-                #rgb_value = np.array([r,g,b])
-                
 
+                #print(r,g,b)
+                
                 if (r <= 20 and b <= 20 and g <= 20): # Omits black
                     continue
                 if (r >= 230 and b >= 230 and g >= 230): # Omits white
